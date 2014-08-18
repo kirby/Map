@@ -10,7 +10,7 @@ import UIKit
 import MapKit
 import CoreLocation
 
-class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDelegate {
+class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDelegate, MKMapViewDelegate {
                             
     @IBOutlet weak var mapView: MKMapView!
     
@@ -44,8 +44,10 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
         super.viewDidLoad()
         self.setDefaultLocation()
         self.coreLocationManager.delegate = self
+        self.mapView.delegate = self
         if self.checkCoreLocationAuthorization() {
             // get current position
+            self.mapView.showsUserLocation = true
             setCurrentLocation()
             self.gestureRecognizer = self.setupGestureRecognizer()
         }
@@ -59,18 +61,25 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
     func setDefaultLocation() {
         self.latTextField.text = "47.6204"
         self.longTextField.text = "-122.3491"
+        
+        self.mapView.showsUserLocation = true
+        self.mapView.userLocation.title = "You"
+        self.mapView.userLocation.subtitle = "Are here!"
     }
     
     func setCurrentLocation() {
-        println("location = \(self.coreLocationManager.location)")
+//        if self.coreLocationManager.location == nil { return }
+//        
+//        let lat = self.coreLocationManager.location.coordinate.latitude
+//        let long = self.coreLocationManager.location.coordinate.longitude
+//        
+//        self.latTextField.text = lat.description
+//        self.longTextField.text = long.description
         
-        if self.coreLocationManager.location == nil { return }
+        if self.mapView.userLocation.location == nil { return }
         
-        let lat = self.coreLocationManager.location.coordinate.latitude
-        let long = self.coreLocationManager.location.coordinate.longitude
-        
-        self.latTextField.text = lat.description
-        self.longTextField.text = long.description
+        let lat = self.mapView.userLocation.location.coordinate.latitude
+        let long = self.mapView.userLocation.location.coordinate.longitude
         
         flyToLocation(lat, long: long)
         
@@ -91,11 +100,9 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
             println("Display custom view asking for permission again")
         case .Authorized:
             println("Good to go")
-//            self.coreLocationManager.startUpdatingLocation()
             authorized = true
         case .AuthorizedWhenInUse:
             println("Good to go")
-//            self.coreLocationManager.startUpdatingLocation()
             authorized = true
         default:
             println("checkCoreLocationAuthorization = default")
@@ -126,6 +133,7 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
     
     func handleLongTouch(sender : UILongPressGestureRecognizer) {
         println("sender = \(sender)")
+        
     }
     
     // --------------------------------------------------------------------------------
