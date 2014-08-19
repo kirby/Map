@@ -11,7 +11,7 @@ import UIKit
 import MapKit
 import CoreLocation
 
-class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDelegate, MKMapViewDelegate, UIGestureRecognizerDelegate {
+class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDelegate, MKMapViewDelegate, UIGestureRecognizerDelegate, AddReminderDelegate {
                             
     @IBOutlet weak var mapView: MKMapView!
     
@@ -158,17 +158,16 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
     }
     
     func handleLongTouch(sender : UILongPressGestureRecognizer) {
-        println("sender = \(sender)")
         switch sender.state {
         case .Began:
-            println("began")
+            println("handleLongTouch began")
             self.performSegueWithIdentifier("addReminder", sender: self)
         case .Changed:
-            println("change")
+            println("handleLongTouch change")
         case .Ended:
-            println("ended")
+            println("handleLongTouch ended")
         default:
-            println("default")
+            println("handleLongTouch default")
         }
        
         
@@ -182,6 +181,8 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
         if segue.identifier == "addReminder" {
             var addReminderVC = segue.destinationViewController as AddReminderViewController
             addReminderVC.location = self.mapView.userLocation.location
+            addReminderVC.delegate = self
+            addReminderVC.myContext = self.myContext
         }
     }
     
@@ -245,6 +246,10 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
     }
     
     // --------------------------------------------------------------------------------
+    
+    func addReminder(reminder: Reminder) {
+        println("add reminder \(reminder)")
+    }
 
 }
 
