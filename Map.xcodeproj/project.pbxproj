@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4E2E774B19A3E2C0009EBEC1 /* Reminder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E2E774A19A3E2C0009EBEC1 /* Reminder.swift */; };
+		4E2E774E19A3E65A009EBEC1 /* AddReminderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E2E774D19A3E65A009EBEC1 /* AddReminderViewController.swift */; };
 		4EE0563B19A2647C00F5BAD2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE0563A19A2647C00F5BAD2 /* AppDelegate.swift */; };
 		4EE0563E19A2647C00F5BAD2 /* Map.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 4EE0563C19A2647C00F5BAD2 /* Map.xcdatamodeld */; };
 		4EE0564019A2647C00F5BAD2 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE0563F19A2647C00F5BAD2 /* ViewController.swift */; };
@@ -27,6 +29,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		4E2E774919A3E2BF009EBEC1 /* Map-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Map-Bridging-Header.h"; sourceTree = "<group>"; };
+		4E2E774A19A3E2C0009EBEC1 /* Reminder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Reminder.swift; sourceTree = "<group>"; };
+		4E2E774D19A3E65A009EBEC1 /* AddReminderViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddReminderViewController.swift; sourceTree = "<group>"; };
 		4EE0563519A2647C00F5BAD2 /* Map.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Map.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4EE0563919A2647C00F5BAD2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4EE0563A19A2647C00F5BAD2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -59,6 +64,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4E2E774C19A3E2CD009EBEC1 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				4EE0563C19A2647C00F5BAD2 /* Map.xcdatamodeld */,
+				4E2E774919A3E2BF009EBEC1 /* Map-Bridging-Header.h */,
+				4E2E774A19A3E2C0009EBEC1 /* Reminder.swift */,
+			);
+			name = Model;
+			sourceTree = "<group>";
+		};
 		4EE0562C19A2647C00F5BAD2 = {
 			isa = PBXGroup;
 			children = (
@@ -82,10 +97,11 @@
 			isa = PBXGroup;
 			children = (
 				4EE0563A19A2647C00F5BAD2 /* AppDelegate.swift */,
+				4E2E774D19A3E65A009EBEC1 /* AddReminderViewController.swift */,
 				4EE0563F19A2647C00F5BAD2 /* ViewController.swift */,
 				4EE0564119A2647C00F5BAD2 /* Main.storyboard */,
 				4EE0564419A2647C00F5BAD2 /* Images.xcassets */,
-				4EE0563C19A2647C00F5BAD2 /* Map.xcdatamodeld */,
+				4E2E774C19A3E2CD009EBEC1 /* Model */,
 				4EE0563819A2647C00F5BAD2 /* Supporting Files */,
 			);
 			path = Map;
@@ -220,9 +236,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4E2E774E19A3E65A009EBEC1 /* AddReminderViewController.swift in Sources */,
 				4EE0564019A2647C00F5BAD2 /* ViewController.swift in Sources */,
 				4EE0563E19A2647C00F5BAD2 /* Map.xcdatamodeld in Sources */,
 				4EE0563B19A2647C00F5BAD2 /* AppDelegate.swift in Sources */,
+				4E2E774B19A3E2C0009EBEC1 /* Reminder.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -340,9 +358,12 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_ENABLE_MODULES = YES;
 				INFOPLIST_FILE = Map/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "Map/Map-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
@@ -351,9 +372,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_ENABLE_MODULES = YES;
 				INFOPLIST_FILE = Map/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "Map/Map-Bridging-Header.h";
 			};
 			name = Release;
 		};
@@ -410,6 +433,7 @@
 				4EE0565619A2647C00F5BAD2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		4EE0565719A2647C00F5BAD2 /* Build configuration list for PBXNativeTarget "MapTests" */ = {
 			isa = XCConfigurationList;
@@ -418,6 +442,7 @@
 				4EE0565919A2647C00F5BAD2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 

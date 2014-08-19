@@ -6,11 +6,12 @@
 //  Copyright (c) 2014 Worxly. All rights reserved.
 //
 
+import CoreData
 import UIKit
 import MapKit
 import CoreLocation
 
-class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDelegate, MKMapViewDelegate {
+class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDelegate, MKMapViewDelegate, UIGestureRecognizerDelegate {
                             
     @IBOutlet weak var mapView: MKMapView!
     
@@ -33,6 +34,9 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
     
     // --------------------------------------------------------------------------------
     
+    var myContext : NSManagedObjectContext!
+    var reminders = [Reminder]()
+
     let coreLocationManager = CLLocationManager()
     var gestureRecognizer = UIGestureRecognizer()
     
@@ -42,6 +46,7 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         self.setDefaultLocation()
         self.coreLocationManager.delegate = self
         self.mapView.delegate = self
@@ -51,10 +56,31 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
             setCurrentLocation()
             self.gestureRecognizer = self.setupGestureRecognizer()
         }
+        self.loadReminders()
+        
+    }
+    
+    func loadReminders() {
+        println("load reminders")
+        var appDelegate = UIApplication.sharedApplication().delegate as AppDelegate
+        self.myContext = appDelegate.managedObjectContext
+        
+        var request = NSFetchRequest(entityName: "Reminder")
+        var error : NSError?
+        self.reminders = self.myContext.executeFetchRequest(request, error: &error) as [Reminder]
+        if error != nil {
+            println("\(error?.localizedDescription)")
+        }
     }
     
     func setupGestureRecognizer() -> UILongPressGestureRecognizer {
-        var gr = UILongPressGestureRecognizer(target: self.mapView, action: Selector("handleLongTouch:"))
+        var gr = UILongPressGestureRecognizer(target: self, action: Selector("handleLongTouch:"))
+//        gr.numberOfTouchesRequired = 1
+//        gr.numberOfTapsRequired = 1
+        
+        gr.delegate = self
+        self.mapView.addGestureRecognizer(gr)
+        
         return gr
     }
     
@@ -133,7 +159,55 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
     
     func handleLongTouch(sender : UILongPressGestureRecognizer) {
         println("sender = \(sender)")
+        switch sender.state {
+        case .Began:
+            println("began")
+            self.performSegueWithIdentifier("addReminder", sender: self)
+        case .Changed:
+            println("change")
+        case .Ended:
+            println("ended")
+        default:
+            println("default")
+        }
+       
         
+//        var point = MKPointAnnotation().setCoordinate(newCoordinate: CLLocationCoordinate2D)
+//        var annotation = MKAnnotation.setCoordinate(self.mapView.)
+        
+//        self.mapView.annotations.append(annotation)
+    }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue!, sender: AnyObject!) {
+        if segue.identifier == "addReminder" {
+            var addReminderVC = segue.destinationViewController as AddReminderViewController
+            addReminderVC.location = self.mapView.userLocation.location
+        }
+    }
+    
+    func mapView(mapView: MKMapView!, didSelectAnnotationView view: MKAnnotationView!) {
+        println("didSelectAnnotationView")
+    }
+    
+    func mapView(mapView: MKMapView!, viewForAnnotation annotation: MKAnnotation!) -> MKAnnotationView! {
+        if annotation is MKUserLocation {
+            return nil
+        }
+        
+        let reuseId = "pin"
+        
+        var pinView = mapView.dequeueReusableAnnotationViewWithIdentifier(reuseId) as? MKPinAnnotationView
+        if pinView == nil {
+            pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
+            pinView!.canShowCallout = true
+            pinView!.animatesDrop = true
+            pinView!.pinColor = .Green
+        }
+        else {
+            pinView!.annotation = annotation
+        }
+        
+        return pinView
     }
     
     // --------------------------------------------------------------------------------
