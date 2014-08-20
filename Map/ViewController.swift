@@ -48,6 +48,7 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
         super.viewDidLoad()
         
         self.setDefaultLocation()
+        self.setCurrentLocation()
         self.coreLocationManager.delegate = self
         self.mapView.delegate = self
         if self.checkCoreLocationAuthorization() {
@@ -75,12 +76,8 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
     
     func setupGestureRecognizer() -> UILongPressGestureRecognizer {
         var gr = UILongPressGestureRecognizer(target: self, action: Selector("handleLongTouch:"))
-//        gr.numberOfTouchesRequired = 1
-//        gr.numberOfTapsRequired = 1
-        
         gr.delegate = self
         self.mapView.addGestureRecognizer(gr)
-        
         return gr
     }
     
@@ -94,21 +91,12 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
     }
     
     func setCurrentLocation() {
-//        if self.coreLocationManager.location == nil { return }
-//        
-//        let lat = self.coreLocationManager.location.coordinate.latitude
-//        let long = self.coreLocationManager.location.coordinate.longitude
-//        
-//        self.latTextField.text = lat.description
-//        self.longTextField.text = long.description
-        
         if self.mapView.userLocation.location == nil { return }
         
         let lat = self.mapView.userLocation.location.coordinate.latitude
         let long = self.mapView.userLocation.location.coordinate.longitude
         
         flyToLocation(lat, long: long)
-        
     }
     
     func checkCoreLocationAuthorization() -> Bool {
@@ -139,7 +127,6 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
 
     @IBAction func goButtonPressed(sender: AnyObject) {
@@ -154,6 +141,7 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
     func flyToLocation(lat : Double, long : Double) {
         let coordinate = CLLocationCoordinate2D(latitude: lat, longitude: long)
         let camera = MKMapCamera(lookingAtCenterCoordinate: coordinate, fromEyeCoordinate: coordinate, eyeAltitude: 10000)
+        self.mapView.showsUserLocation = true
         self.mapView.setCamera(camera, animated: true)
     }
     
@@ -161,7 +149,10 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
         switch sender.state {
         case .Began:
             println("handleLongTouch began")
-            self.performSegueWithIdentifier("addReminder", sender: self)
+            var touchPoint = sender.locationInView(self.mapView)
+            var coordinate = self.mapView.convertPoint(touchPoint, toCoordinateFromView: self.mapView)
+            setupAnnotation(coordinate)
+            //            self.performSegueWithIdentifier("addReminder", sender: self)
         case .Changed:
             println("handleLongTouch change")
         case .Ended:
@@ -175,6 +166,14 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
 //        var annotation = MKAnnotation.setCoordinate(self.mapView.)
         
 //        self.mapView.annotations.append(annotation)
+    }
+    
+    func setupAnnotation(coordinate : CLLocationCoordinate2D) {
+        var annoation = MKPointAnnotation()
+        annoation.coordinate = coordinate
+        annoation.title = "Add Reminder"
+        self.mapView.addAnnotation(annoation)
+        println("added annoation at \(annoation.coordinate.latitude) \(annoation.coordinate.longitude)")
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue!, sender: AnyObject!) {
@@ -191,9 +190,12 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
     }
     
     func mapView(mapView: MKMapView!, viewForAnnotation annotation: MKAnnotation!) -> MKAnnotationView! {
+
         if annotation is MKUserLocation {
             return nil
         }
+        
+        var calloutButton = UIButton.buttonWithType(.ContactAdd) as UIButton
         
         let reuseId = "pin"
         
@@ -203,6 +205,7 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
             pinView!.canShowCallout = true
             pinView!.animatesDrop = true
             pinView!.pinColor = .Green
+            pinView!.rightCalloutAccessoryView = calloutButton
         }
         else {
             pinView!.annotation = annotation
@@ -211,7 +214,23 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
         return pinView
     }
     
+    func mapView(mapView: MKMapView!, annotationView view: MKAnnotationView!, calloutAccessoryControlTapped control: UIControl!) {
+        
+        var coordinate = view.annotation.coordinate
+        var region = CLCircularRegion(center: coordinate, radius: 200, identifier: "Reminder!")
+
+        self.coreLocationManager.startMonitoringForRegion(region)
+    }
+    
     // --------------------------------------------------------------------------------
+    
+    func locationManager(manager: CLLocationManager!, didEnterRegion region: CLRegion!) {
+        println("did enter region")
+    }
+    
+    func locationManager(manager: CLLocationManager!, didExitRegion region: CLRegion!) {
+        println("did exit region")
+    }
 
     func locationManager(manager: CLLocationManager!, didUpdateLocations locations: [AnyObject]!) {
         let lastLocation = locations.last as? CLLocation
@@ -249,6 +268,8 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
     
     func addReminder(reminder: Reminder) {
         println("add reminder \(reminder)")
+        var error : NSError?
+        self.myContext.save(&error)
     }
 
 }
