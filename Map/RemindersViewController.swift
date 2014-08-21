@@ -22,6 +22,7 @@ class RemindersViewController: UIViewController, UITableViewDataSource, UITableV
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.setupEditButtonItem()
         self.setupFetchedResultsController()
     }
     
@@ -33,6 +34,15 @@ class RemindersViewController: UIViewController, UITableViewDataSource, UITableV
         if error != nil {
             println("viewWillAppear \(error?.localizedDescription)")
         }
+    }
+    
+    func setupEditButtonItem() {
+        var editButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Edit, target: self, action: Selector("toggleEditMode:"))
+        self.navigationItem.rightBarButtonItem = editButtonItem
+    }
+    
+    func toggleEditMode(sender : UIBarButtonItem) {
+        self.tableView.editing = !self.tableView.editing
     }
     
     func setupFetchedResultsController() {
@@ -67,6 +77,9 @@ class RemindersViewController: UIViewController, UITableViewDataSource, UITableV
     func configureCell(cell : UITableViewCell, forIndexPath indexPath: NSIndexPath) {
         var reminderForRow = self.fetchedResultsController.fetchedObjects[indexPath.row] as Reminder
         cell.textLabel.text = reminderForRow.message
+//        if self.tableView.editing {
+            cell.showsReorderControl = true
+//        }
     }
     
     // ----------------------------------------------------------------
@@ -136,5 +149,20 @@ class RemindersViewController: UIViewController, UITableViewDataSource, UITableV
         
         return [deleteAction, editAction]
     }
+    
+    func tableView(tableView: UITableView!, canEditRowAtIndexPath indexPath: NSIndexPath!) -> Bool {
+        println("canEditRowAtIndexPath \(indexPath.row)")
+        return true
+    }
+    
+    func tableView(tableView: UITableView!, canMoveRowAtIndexPath indexPath: NSIndexPath!) -> Bool {
+        println("canMoveRowAtIndexPath \(indexPath.row)")
+        return true
+    }
+    
+    func tableView(tableView: UITableView!, moveRowAtIndexPath sourceIndexPath: NSIndexPath!, toIndexPath destinationIndexPath: NSIndexPath!) {
+        println("moveRowAtIndexPath")
+    }
+
 
 }

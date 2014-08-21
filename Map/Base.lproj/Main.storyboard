@@ -131,11 +131,11 @@
                         <viewControllerLayoutGuide type="bottom" id="IY7-yy-fXc"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="OAZ-DM-eCv">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="94" width="600" height="536"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="uhG-mQ-cnC">
-                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="536"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="ReminderCell" id="1LA-V2-hJk">
@@ -160,6 +160,7 @@
                             <constraint firstAttribute="trailing" secondItem="uhG-mQ-cnC" secondAttribute="trailing" id="tv1-ui-5W0"/>
                         </constraints>
                     </view>
+                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <connections>
                         <outlet property="tableView" destination="uhG-mQ-cnC" id="moJ-OX-IS2"/>
                     </connections>
