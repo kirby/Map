@@ -20,6 +20,8 @@ class RemindersViewController: UIViewController, UITableViewDataSource, UITableV
     var moc : NSManagedObjectContext!
     var fetchedResultsController : NSFetchedResultsController!
     
+    var selectedCell : UITableViewCell!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setupEditButtonItem()
@@ -136,18 +138,26 @@ class RemindersViewController: UIViewController, UITableViewDataSource, UITableV
                     println("Error during delete: \(error?.localizedDescription)")
                 }
                 self.fetchedResultsController.fetchRequest
-//                self.tableView.reloadData()
             }
         }
         deleteAction.backgroundColor = UIColor.redColor()
         
         let editAction = UITableViewRowAction(style: .Default, title: "Edit") { (action, indexPath) -> Void in
             println("TODO - edit reminder")
-            let cell = tableView.cellForRowAtIndexPath(indexPath) as UITableViewCell
+            self.selectedCell = tableView.cellForRowAtIndexPath(indexPath) as UITableViewCell
+            self.performSegueWithIdentifier("EditReminder", sender: self)
         }
         editAction.backgroundColor = UIColor.lightGrayColor()
         
         return [deleteAction, editAction]
+    }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue!, sender: AnyObject!) {
+        if segue.identifier == "EditReminder" {
+            var editReminderVC = segue.destinationViewController as EditReminderViewController
+            var reminder = self.fetchedResultsController.objectAtIndexPath(self.tableView.indexPathForCell(self.selectedCell)) as Reminder
+            editReminderVC.reminder = reminder
+        }
     }
     
     func tableView(tableView: UITableView!, canEditRowAtIndexPath indexPath: NSIndexPath!) -> Bool {
@@ -162,6 +172,7 @@ class RemindersViewController: UIViewController, UITableViewDataSource, UITableV
     
     func tableView(tableView: UITableView!, moveRowAtIndexPath sourceIndexPath: NSIndexPath!, toIndexPath destinationIndexPath: NSIndexPath!) {
         println("moveRowAtIndexPath")
+        
     }
 
 

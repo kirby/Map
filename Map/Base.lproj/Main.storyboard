@@ -115,7 +115,6 @@
                         <outlet property="latTextField" destination="IpT-X2-ZHn" id="ERb-nw-G4L"/>
                         <outlet property="longTextField" destination="tUb-kw-m6r" id="QTq-DL-klB"/>
                         <outlet property="mapView" destination="WGz-gD-OYk" id="ezY-gd-2Cw"/>
-                        <segue destination="lM9-Ja-0TP" kind="show" identifier="addReminder" id="TI4-hD-B2t"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
@@ -163,22 +162,23 @@
                     <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <connections>
                         <outlet property="tableView" destination="uhG-mQ-cnC" id="moJ-OX-IS2"/>
+                        <segue destination="lM9-Ja-0TP" kind="show" identifier="EditReminder" id="rjz-nD-hcD"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="9Jg-Mj-TOt" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2613" y="50"/>
+            <point key="canvasLocation" x="2673" y="50"/>
         </scene>
-        <!--Add Reminder-->
+        <!--Edit Reminder-->
         <scene sceneID="hh3-Vw-56E">
             <objects>
-                <viewController title="Add Reminder" id="lM9-Ja-0TP" customClass="AddReminderViewController" customModule="Map" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController title="Edit Reminder" id="lM9-Ja-0TP" customClass="EditReminderViewController" customModule="Map" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="bR7-CM-e4n"/>
                         <viewControllerLayoutGuide type="bottom" id="Gtz-ss-WB1"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="Aeb-73-39Z">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="536"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Lat" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gXx-E7-Rhk">
@@ -211,8 +211,8 @@
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="km4-xh-D8j">
-                                <rect key="frame" x="248" y="285" width="105" height="30"/>
-                                <state key="normal" title="Save Reminder">
+                                <rect key="frame" x="240" y="253" width="121" height="30"/>
+                                <state key="normal" title="Update Reminder">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <connections>
@@ -239,6 +239,7 @@
                             </mask>
                         </variation>
                     </view>
+                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <connections>
                         <outlet property="latTextField" destination="gXx-E7-Rhk" id="qxP-bX-Xte"/>
                         <outlet property="longTextField" destination="LgZ-zA-oat" id="2WG-Ya-kEB"/>
@@ -247,7 +248,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ueh-sw-OXH" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1915" y="896"/>
+            <point key="canvasLocation" x="3407" y="50"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="Uiz-QV-2Jx">

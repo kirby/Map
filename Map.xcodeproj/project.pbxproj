@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		4E2E774B19A3E2C0009EBEC1 /* Reminder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E2E774A19A3E2C0009EBEC1 /* Reminder.swift */; };
-		4E2E774E19A3E65A009EBEC1 /* AddReminderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E2E774D19A3E65A009EBEC1 /* AddReminderViewController.swift */; };
+		4E2E774E19A3E65A009EBEC1 /* EditReminderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E2E774D19A3E65A009EBEC1 /* EditReminderViewController.swift */; };
 		4E4237A719A5510D009B7641 /* RemindersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E4237A619A5510D009B7641 /* RemindersViewController.swift */; };
 		4EE0563B19A2647C00F5BAD2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE0563A19A2647C00F5BAD2 /* AppDelegate.swift */; };
 		4EE0563E19A2647C00F5BAD2 /* Map.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 4EE0563C19A2647C00F5BAD2 /* Map.xcdatamodeld */; };
@@ -32,7 +32,7 @@
 /* Begin PBXFileReference section */
 		4E2E774919A3E2BF009EBEC1 /* Map-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Map-Bridging-Header.h"; sourceTree = "<group>"; };
 		4E2E774A19A3E2C0009EBEC1 /* Reminder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Reminder.swift; sourceTree = "<group>"; };
-		4E2E774D19A3E65A009EBEC1 /* AddReminderViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddReminderViewController.swift; sourceTree = "<group>"; };
+		4E2E774D19A3E65A009EBEC1 /* EditReminderViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditReminderViewController.swift; sourceTree = "<group>"; };
 		4E4237A619A5510D009B7641 /* RemindersViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemindersViewController.swift; sourceTree = "<group>"; };
 		4EE0563519A2647C00F5BAD2 /* Map.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Map.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4EE0563919A2647C00F5BAD2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -99,7 +99,7 @@
 			isa = PBXGroup;
 			children = (
 				4EE0563A19A2647C00F5BAD2 /* AppDelegate.swift */,
-				4E2E774D19A3E65A009EBEC1 /* AddReminderViewController.swift */,
+				4E2E774D19A3E65A009EBEC1 /* EditReminderViewController.swift */,
 				4EE0563F19A2647C00F5BAD2 /* ViewController.swift */,
 				4E4237A619A5510D009B7641 /* RemindersViewController.swift */,
 				4EE0564119A2647C00F5BAD2 /* Main.storyboard */,
@@ -239,7 +239,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4E2E774E19A3E65A009EBEC1 /* AddReminderViewController.swift in Sources */,
+				4E2E774E19A3E65A009EBEC1 /* EditReminderViewController.swift in Sources */,
 				4EE0564019A2647C00F5BAD2 /* ViewController.swift in Sources */,
 				4E4237A719A5510D009B7641 /* RemindersViewController.swift in Sources */,
 				4EE0563E19A2647C00F5BAD2 /* Map.xcdatamodeld in Sources */,
