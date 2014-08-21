@@ -11,7 +11,7 @@ import UIKit
 import MapKit
 import CoreLocation
 
-class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDelegate, MKMapViewDelegate, UIGestureRecognizerDelegate, AddReminderDelegate {
+class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDelegate, MKMapViewDelegate, UIGestureRecognizerDelegate {
                             
     @IBOutlet weak var mapView: MKMapView!
     
@@ -21,21 +21,10 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
     @IBOutlet weak var currentLat: UILabel!
     @IBOutlet weak var currentLong: UILabel!
     
-    @IBAction func toggleTrackingButton(sender: UIButton) {
-        self.updatingLocations = !self.updatingLocations
-        if self.updatingLocations {
-            sender.setTitle("Stop Tracking", forState: UIControlState.Normal)
-            self.coreLocationManager.startUpdatingLocation()
-        } else {
-            sender.setTitle("Start Tracking", forState: UIControlState.Normal)
-            self.coreLocationManager.stopUpdatingLocation()
-        }
-    }
-    
     // --------------------------------------------------------------------------------
     
-    var myContext : NSManagedObjectContext!
-    var reminders = [Reminder]()
+    var moc : NSManagedObjectContext!
+    var reminders : [Reminder]!
 
     let coreLocationManager = CLLocationManager()
     var gestureRecognizer = UIGestureRecognizer()
@@ -47,38 +36,49 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.setDefaultLocation()
-        self.setCurrentLocation()
+        var appDelegate = UIApplication.sharedApplication().delegate as AppDelegate
+        self.moc = appDelegate.managedObjectContext
+        
         self.coreLocationManager.delegate = self
         self.mapView.delegate = self
+        
+        self.setDefaultLocation()
+
         if self.checkCoreLocationAuthorization() {
             // get current position
             self.mapView.showsUserLocation = true
             setCurrentLocation()
             self.gestureRecognizer = self.setupGestureRecognizer()
         }
-        self.loadReminders()
-        
     }
     
-    func loadReminders() {
-        println("load reminders")
-        var appDelegate = UIApplication.sharedApplication().delegate as AppDelegate
-        self.myContext = appDelegate.managedObjectContext
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
         
-        var request = NSFetchRequest(entityName: "Reminder")
-        var error : NSError?
-        self.reminders = self.myContext.executeFetchRequest(request, error: &error) as [Reminder]
-        if error != nil {
-            println("\(error?.localizedDescription)")
+        self.loadReminders()
+        
+        if let allAnnotations = self.mapView.annotations as? [MKAnnotation] {
+            self.mapView.removeAnnotations(allAnnotations)
+            self.loadAnnotations()
         }
     }
     
-    func setupGestureRecognizer() -> UILongPressGestureRecognizer {
-        var gr = UILongPressGestureRecognizer(target: self, action: Selector("handleLongTouch:"))
-        gr.delegate = self
-        self.mapView.addGestureRecognizer(gr)
-        return gr
+    func loadReminders() {
+        var request = NSFetchRequest(entityName: "Reminder")
+        let sort = NSSortDescriptor(key: "message", ascending: true)
+        request.sortDescriptors = [sort]
+        request.fetchBatchSize = 20
+        
+        var error : NSError?
+        
+        self.reminders = self.moc.executeFetchRequest(request, error: &error) as [Reminder]
+    }
+    
+    func loadAnnotations() {
+        for reminder in reminders {
+            println("load reminder \(reminder.message)")
+            self.addAnnotation(reminder)
+        }
     }
     
     func setDefaultLocation() {
@@ -90,6 +90,13 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
         self.mapView.userLocation.subtitle = "Are here!"
     }
     
+    func setupGestureRecognizer() -> UILongPressGestureRecognizer {
+        var gr = UILongPressGestureRecognizer(target: self, action: Selector("handleLongTouch:"))
+        gr.delegate = self
+        self.mapView.addGestureRecognizer(gr)
+        return gr
+    }
+
     func setCurrentLocation() {
         if self.mapView.userLocation.location == nil { return }
         
@@ -100,45 +107,50 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
     }
     
     func checkCoreLocationAuthorization() -> Bool {
-        
         var authorized = false
         
         let authz = CLLocationManager.authorizationStatus() as CLAuthorizationStatus
         
         switch authz {
         case .NotDetermined:
+            println("authorizationStatus NotDetermined; ask permission")
             self.coreLocationManager.requestWhenInUseAuthorization()
         case .Restricted:
-            println("Display custom view asking for permission again")
+            println("authorizationStatus Restricted; Display custom view asking for permission again")
         case .Denied:
-            println("Display custom view asking for permission again")
+            println("authorizationStatus; Denied; Display custom view asking for permission again")
         case .Authorized:
-            println("Good to go")
+            println("authorizationStatus Authorized")
             authorized = true
         case .AuthorizedWhenInUse:
-            println("Good to go")
+            println("authorizationStatus AuthorizedWhenInUse")
             authorized = true
         default:
-            println("checkCoreLocationAuthorization = default")
+            println("authorizationStatus default")
         }
         
         return authorized
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
+    
+    @IBAction func toggleTrackingButton(sender: UIButton) {
+        self.updatingLocations = !self.updatingLocations
+        if self.updatingLocations {
+            sender.setTitle("Stop Tracking", forState: UIControlState.Normal)
+            self.coreLocationManager.startUpdatingLocation()
+        } else {
+            sender.setTitle("Start Tracking", forState: UIControlState.Normal)
+            self.coreLocationManager.stopUpdatingLocation()
+        }
     }
 
     @IBAction func goButtonPressed(sender: AnyObject) {
-        println("go!")
-        
         let lat = NSString(string: self.latTextField.text).doubleValue
         let long = NSString(string: self.longTextField.text).doubleValue
-
         self.flyToLocation(lat, long: long)
     }
     
     func flyToLocation(lat : Double, long : Double) {
+        println("flyToLocation \(lat) \(long)")
         let coordinate = CLLocationCoordinate2D(latitude: lat, longitude: long)
         let camera = MKMapCamera(lookingAtCenterCoordinate: coordinate, fromEyeCoordinate: coordinate, eyeAltitude: 10000)
         self.mapView.showsUserLocation = true
@@ -151,8 +163,7 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
             println("handleLongTouch began")
             var touchPoint = sender.locationInView(self.mapView)
             var coordinate = self.mapView.convertPoint(touchPoint, toCoordinateFromView: self.mapView)
-            setupAnnotation(coordinate)
-            //            self.performSegueWithIdentifier("addReminder", sender: self)
+            addAnnotation(coordinate)
         case .Changed:
             println("handleLongTouch change")
         case .Ended:
@@ -160,30 +171,44 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
         default:
             println("handleLongTouch default")
         }
-       
-        
-//        var point = MKPointAnnotation().setCoordinate(newCoordinate: CLLocationCoordinate2D)
-//        var annotation = MKAnnotation.setCoordinate(self.mapView.)
-        
-//        self.mapView.annotations.append(annotation)
     }
     
-    func setupAnnotation(coordinate : CLLocationCoordinate2D) {
-        var annoation = MKPointAnnotation()
-        annoation.coordinate = coordinate
-        annoation.title = "Add Reminder"
-        self.mapView.addAnnotation(annoation)
-        println("added annoation at \(annoation.coordinate.latitude) \(annoation.coordinate.longitude)")
+    func addAnnotation(coordinate : CLLocationCoordinate2D) {
+        var annotation = MKPointAnnotation()
+        annotation.coordinate = coordinate
+        annotation.title = "Add Reminder"
+        self.mapView.addAnnotation(annotation)
+        println("added annoation at \(annotation.coordinate.latitude) \(annotation.coordinate.longitude)")
+        
     }
     
-    override func prepareForSegue(segue: UIStoryboardSegue!, sender: AnyObject!) {
-        if segue.identifier == "addReminder" {
-            var addReminderVC = segue.destinationViewController as AddReminderViewController
-            addReminderVC.location = self.mapView.userLocation.location
-            addReminderVC.delegate = self
-            addReminderVC.myContext = self.myContext
+    func addAnnotation(reminder : Reminder) {
+        var annotation = MKPointAnnotation()
+        annotation.coordinate.latitude = reminder.lat
+        annotation.coordinate.longitude = reminder.long
+        annotation.title = reminder.message
+        self.mapView.addAnnotation(annotation)
+        println("added annoation at \(annotation.coordinate.latitude) \(annotation.coordinate.longitude)")
+    }
+    
+    func saveAnnotation(coordinate : CLLocationCoordinate2D) {
+        println("saveAnnotation \(coordinate.latitude) \(coordinate.longitude)")
+        var newReminder = NSEntityDescription.insertNewObjectForEntityForName("Reminder", inManagedObjectContext: self.moc) as Reminder
+
+        newReminder.lat = coordinate.latitude
+        newReminder.long = coordinate.longitude
+        newReminder.message = "Reminder #1"
+        
+        var error : NSError?
+        
+        self.moc.save(&error)
+        
+        if error != nil {
+            println("Trouble saving Reminder: \(error?.localizedDescription)")
         }
     }
+    
+    // MARK: - MKMapViewDelegate
     
     func mapView(mapView: MKMapView!, didSelectAnnotationView view: MKAnnotationView!) {
         println("didSelectAnnotationView")
@@ -216,13 +241,20 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
     
     func mapView(mapView: MKMapView!, annotationView view: MKAnnotationView!, calloutAccessoryControlTapped control: UIControl!) {
         
+        println("calloutAccessoryControlTapped")
+        
         var coordinate = view.annotation.coordinate
         var region = CLCircularRegion(center: coordinate, radius: 200, identifier: "Reminder!")
 
         self.coreLocationManager.startMonitoringForRegion(region)
+        
+        self.saveAnnotation(coordinate)
+
     }
     
     // --------------------------------------------------------------------------------
+    
+    // MARK: - CLLocationManagerDelegate
     
     func locationManager(manager: CLLocationManager!, didEnterRegion region: CLRegion!) {
         println("did enter region")
@@ -247,29 +279,20 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
     }
     
     func locationManager(manager: CLLocationManager!, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
-        println("manager = \(manager)")
         switch status {
         case .Authorized:
-            println("good to go!")
+            println("locationManager Authorized")
         case .AuthorizedWhenInUse:
-            println("good to go!")
+            println("locationManager AuthorizedWhenInUse")
         case .Denied:
-            println("ask for permission")
+            println("locationManager Denied")
         case .NotDetermined:
-            println("ask for permission")
+            println("locationManager NotDetermined")
         case .Restricted:
-            println("ask for permission")
+            println("locationManager Restricted")
         default:
-            println("status = default")
+            println("locationManager default")
         }
-    }
-    
-    // --------------------------------------------------------------------------------
-    
-    func addReminder(reminder: Reminder) {
-        println("add reminder \(reminder)")
-        var error : NSError?
-        self.myContext.save(&error)
     }
 
 }
