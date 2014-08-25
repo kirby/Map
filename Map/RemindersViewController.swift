@@ -161,12 +161,12 @@ class RemindersViewController: UIViewController, UITableViewDataSource, UITableV
     }
     
     func tableView(tableView: UITableView!, canEditRowAtIndexPath indexPath: NSIndexPath!) -> Bool {
-        println("canEditRowAtIndexPath \(indexPath.row)")
+//        println("canEditRowAtIndexPath \(indexPath.row)")
         return true
     }
     
     func tableView(tableView: UITableView!, canMoveRowAtIndexPath indexPath: NSIndexPath!) -> Bool {
-        println("canMoveRowAtIndexPath \(indexPath.row)")
+//        println("canMoveRowAtIndexPath \(indexPath.row)")
         return true
     }
     

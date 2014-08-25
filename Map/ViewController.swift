@@ -7,11 +7,12 @@
 //
 
 import CoreData
-import UIKit
-import MapKit
+import CoreBluetooth
 import CoreLocation
+import MapKit
+import UIKit
 
-class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDelegate, MKMapViewDelegate, UIGestureRecognizerDelegate {
+class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDelegate, MKMapViewDelegate, UIGestureRecognizerDelegate, CBPeripheralManagerDelegate {
                             
     @IBOutlet weak var mapView: MKMapView!
     
@@ -20,6 +21,19 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
     
     @IBOutlet weak var currentLat: UILabel!
     @IBOutlet weak var currentLong: UILabel!
+    
+    let BEECON_UUID = "B9407F30-F5F8-466E-AFF9-25556B57FE6D"
+    //    let STICKNFIND = ""
+    let UUID = "0B4D374F-AA57-430E-9B57-821031A0D8A3"
+    let myIdentifier = "com.worxly.ibeacon"
+    
+    var locationManager : CLLocationManager!
+    
+    var beaconData : NSMutableDictionary!
+    var region : CLBeaconRegion!
+    var peripheralManager : CBPeripheralManager!
+    
+    var beacons : NSMutableArray!
     
     // --------------------------------------------------------------------------------
     
@@ -50,6 +64,19 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
             setCurrentLocation()
             self.gestureRecognizer = self.setupGestureRecognizer()
         }
+        
+        var beeconUUID = NSUUID(UUIDString: self.BEECON_UUID)
+        
+        // setup location manager for ranging
+        self.locationManager = CLLocationManager()
+        self.locationManager.delegate = self
+        self.locationManager.requestWhenInUseAuthorization()
+        
+        var beeconRegion = CLBeaconRegion(proximityUUID: beeconUUID, identifier: "iPhone")
+        self.locationManager.startMonitoringForRegion(beeconRegion)
+        
+        // become the delegate
+        self.peripheralManager = CBPeripheralManager(delegate: self, queue: nil)
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -294,6 +321,57 @@ class ViewController: UIViewController, UITextFieldDelegate, CLLocationManagerDe
             println("locationManager default")
         }
     }
-
+    
+    // MARK: - CBPeripheralManagerDelegate
+    
+    func peripheralManagerDidUpdateState(peripheral: CBPeripheralManager!) {
+        switch(peripheral.state) {
+        case .PoweredOff:
+            println("PoweredOff")
+        case .PoweredOn:
+            println("PoweredOn")
+        case .Resetting:
+            println("Resetting")
+        case .Unauthorized:
+            println("Unauthorized")
+        case .Unknown:
+            println("Unknown")
+        case .Unsupported:
+            println("Unsupported")
+        }
+    }
+    
+    // MARK: - CLLocationManagerDelegate
+    
+    func locationManager(manager: CLLocationManager!, didRangeBeacons beacons: [AnyObject]!, inRegion region: CLBeaconRegion!) {
+        if beacons.count > 0 {
+            println("did range \(beacons.count) beacons")
+            
+//            var beaconInfo = self.textView.text
+            for beacon in beacons {
+                println("Ranged beacon \(beacon)")
+//                beaconInfo = "\(beacon.description)\n\(beaconInfo)"
+            }
+//            self.textView.text = beaconInfo
+        }
+    }
+    
+    func locationManager(manager: CLLocationManager!, rangingBeaconsDidFailForRegion region: CLBeaconRegion!, withError error: NSError!) {
+        println("rangingBeaconsDidFailForRegion \(region)")
+    }
+    
+    // Region Monitoring
+    
+    func locationManager(manager: CLLocationManager!, didStartMonitoringForRegion region: CLRegion!) {
+        println("didStartMonitoringForRegion \(region)")
+    }
+    
+    func locationManager(manager: CLLocationManager!, monitoringDidFailForRegion region: CLRegion!, withError error: NSError!) {
+        println("monitoringDidFailForRegion \(region)")
+    }
+    
+    func locationManager(manager: CLLocationManager!, didDetermineState state: CLRegionState, forRegion region: CLRegion!) {
+        println("didDetermineState")
+    }
 }
 
